@@ -1,0 +1,84 @@
+# =============================================================================
+# Render Blueprint Specification for Lab 7 Cloud Deployment
+# Web Services & SOA Laboratory - CampusConnect Microservices + API Gateway
+# =============================================================================
+
+services:
+  # 1. API Gateway (Public Web Service)
+  - type: web
+    name: campusconnect-api-gateway
+    runtime: docker
+    dockerfilePath: ./api-gateway/Dockerfile
+    dockerContext: ./api-gateway
+    plan: free
+    region: oregon
+    envVars:
+      - key: PORT
+        value: 5000
+      - key: USER_SERVICE_URL
+        fromService:
+          type: pserv
+          name: campusconnect-user-service
+          property: hostAndPort
+      - key: PRODUCT_SERVICE_URL
+        fromService:
+          type: pserv
+          name: campusconnect-product-service
+          property: hostAndPort
+      - key: ORDER_SERVICE_URL
+        fromService:
+          type: pserv
+          name: campusconnect-order-service
+          property: hostAndPort
+
+  # 2. User Service (Private Microservice)
+  - type: pserv
+    name: campusconnect-user-service
+    runtime: docker
+    dockerfilePath: ./user-service/Dockerfile
+    dockerContext: ./user-service
+    plan: free
+    region: oregon
+    envVars:
+      - key: PORT
+        value: 3001
+      - key: MONGO_URI
+        sync: false # Set to your MongoDB Atlas SRV URI in the Render dashboard
+
+  # 3. Product Service (Private Microservice)
+  - type: pserv
+    name: campusconnect-product-service
+    runtime: docker
+    dockerfilePath: ./product-service/Dockerfile
+    dockerContext: ./product-service
+    plan: free
+    region: oregon
+    envVars:
+      - key: PORT
+        value: 3002
+      - key: MONGO_URI
+        sync: false # Set to your MongoDB Atlas SRV URI in the Render dashboard
+
+  # 4. Order Service (Private Microservice)
+  - type: pserv
+    name: campusconnect-order-service
+    runtime: docker
+    dockerfilePath: ./order-service/Dockerfile
+    dockerContext: ./order-service
+    plan: free
+    region: oregon
+    envVars:
+      - key: PORT
+        value: 3003
+      - key: USER_SERVICE_URL
+        fromService:
+          type: pserv
+          name: campusconnect-user-service
+          property: hostAndPort
+      - key: PRODUCT_SERVICE_URL
+        fromService:
+          type: pserv
+          name: campusconnect-product-service
+          property: hostAndPort
+      - key: MONGO_URI
+        sync: false # Set to your MongoDB Atlas SRV URI in the Render dashboard

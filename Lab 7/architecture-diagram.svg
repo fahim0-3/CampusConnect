@@ -1,0 +1,118 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 850" width="100%" height="100%">
+  <defs>
+    <style>
+      .title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 24px; font-weight: 700; fill: #0f172a; }
+      .subtitle { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 14px; fill: #475569; }
+      .box-client { fill: #f8fafc; stroke: #0284c7; stroke-width: 2; rx: 8; }
+      .box-gateway { fill: #f5f3ff; stroke: #7c3aed; stroke-width: 2.5; rx: 10; }
+      .box-network { fill: #f0fdf4; stroke: #10b981; stroke-width: 2.5; rx: 12; stroke-dasharray: 8 5; }
+      .box-service-user { fill: #eff6ff; stroke: #2563eb; stroke-width: 2; rx: 8; }
+      .box-service-prod { fill: #fefce8; stroke: #ca8a04; stroke-width: 2; rx: 8; }
+      .box-service-order { fill: #fdf2f8; stroke: #db2777; stroke-width: 2; rx: 8; }
+      .box-db { fill: #ffffff; stroke: #334155; stroke-width: 1.5; rx: 6; }
+      .header-text { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 16px; font-weight: 600; fill: #0f172a; text-anchor: middle; }
+      .sub-text { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 12px; fill: #475569; text-anchor: middle; }
+      .port-tag-public { font-family: 'Consolas', monospace; font-size: 12px; font-weight: 700; fill: #6d28d9; }
+      .port-tag-private { font-family: 'Consolas', monospace; font-size: 11px; font-weight: 600; fill: #dc2626; }
+      .call-text { font-family: 'Consolas', monospace; font-size: 11px; font-weight: 600; fill: #4338ca; }
+      .net-label { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 14px; font-weight: 700; fill: #047857; }
+      .arrow-public { stroke: #7c3aed; stroke-width: 2.5; fill: none; marker-end: url(#arrowhead-purple); }
+      .arrow-proxy { stroke: #2563eb; stroke-width: 2; fill: none; marker-end: url(#arrowhead-blue); }
+      .arrow-order { stroke: #db2777; stroke-width: 2; stroke-dasharray: 4 4; fill: none; marker-end: url(#arrowhead-pink); }
+      .arrow-db { stroke: #475569; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead-gray); }
+    </style>
+    <marker id="arrowhead-purple" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#7c3aed" />
+    </marker>
+    <marker id="arrowhead-blue" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#2563eb" />
+    </marker>
+    <marker id="arrowhead-pink" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#db2777" />
+    </marker>
+    <marker id="arrowhead-gray" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#475569" />
+    </marker>
+  </defs>
+
+  <!-- Title Header -->
+  <text x="550" y="40" text-anchor="middle" class="title">CampusConnect Lab 7: API Gateway, Service Discovery &amp; Cloud Architecture</text>
+  <text x="550" y="65" text-anchor="middle" class="subtitle">Single Public Entry Point • Isolated Private Microservices • Configuration-Based Discovery • MongoDB Atlas / Cloud Persistence</text>
+
+  <!-- LAYER 1: CLIENT / POSTMAN LAYER -->
+  <g transform="translate(150, 100)">
+    <rect width="800" height="70" class="box-client" />
+    <text x="400" y="30" class="header-text">Layer 1: Client Layer (Public Internet / Postman / React Frontend)</text>
+    <text x="400" y="52" class="sub-text">Sends all traffic to a SINGLE public endpoint: http://localhost:5000 (or Cloud Gateway URL)</text>
+  </g>
+
+  <!-- Arrow Client -> Gateway -->
+  <path d="M 550 170 L 550 215" class="arrow-public" />
+  <text x="570" y="198" class="port-tag-public">HTTP / REST (Port 5000)</text>
+
+  <!-- LAYER 2: API GATEWAY (SINGLE ENTRY POINT) -->
+  <g transform="translate(150, 220)">
+    <rect width="800" height="115" class="box-gateway" />
+    <text x="400" y="28" class="header-text" fill="#5b21b6">Layer 2: API Gateway (`api-gateway`)</text>
+    <text x="400" y="48" class="sub-text">Sole Externally Exposed Container: Port 5000:5000</text>
+    <rect x="50" y="60" width="700" height="42" rx="6" fill="#ffffff" stroke="#ddd6fe" />
+    <text x="400" y="78" text-anchor="middle" class="call-text">Centralized Cross-Cutting Concerns: Reverse Proxy • Request Logging • 502/503 Error Trapping • GET /health</text>
+    <text x="400" y="94" text-anchor="middle" class="sub-text" font-size="11px">Routing Table (Config-driven): /users → USER_SERVICE_URL | /products → PRODUCT_SERVICE_URL | /orders → ORDER_SERVICE_URL</text>
+  </g>
+
+  <!-- LAYER 3: DOCKER PRIVATE NETWORK (CAMPUS-NETWORK) -->
+  <rect x="70" y="370" width="960" height="340" class="box-network" />
+  <text x="100" y="395" class="net-label">Layer 3: Private Docker Network: campus-network (Host Ports Isolated / No External Access)</text>
+
+  <!-- USER SERVICE -->
+  <g transform="translate(110, 420)">
+    <rect width="250" height="150" class="box-service-user" />
+    <text x="125" y="30" class="header-text">User Service</text>
+    <text x="125" y="50" class="sub-text">Internal Port :3001</text>
+    <text x="125" y="72" class="port-tag-private">[NO HOST PORT EXPOSED]</text>
+    <text x="125" y="100" class="sub-text">CRUD /users &amp; Profiles</text>
+    <text x="125" y="125" class="sub-text">Owned DB: user_db</text>
+  </g>
+
+  <!-- PRODUCT SERVICE -->
+  <g transform="translate(425, 420)">
+    <rect width="250" height="150" class="box-service-prod" />
+    <text x="125" y="30" class="header-text">Product Service</text>
+    <text x="125" y="50" class="sub-text">Internal Port :3002</text>
+    <text x="125" y="72" class="port-tag-private">[NO HOST PORT EXPOSED]</text>
+    <text x="125" y="100" class="sub-text">CRUD /products &amp; Catalog</text>
+    <text x="125" y="125" class="sub-text">Owned DB: product_db</text>
+  </g>
+
+  <!-- ORDER SERVICE -->
+  <g transform="translate(740, 420)">
+    <rect width="250" height="150" class="box-service-order" />
+    <text x="125" y="30" class="header-text">Order Service</text>
+    <text x="125" y="50" class="sub-text">Internal Port :3003</text>
+    <text x="125" y="72" class="port-tag-private">[NO HOST PORT EXPOSED]</text>
+    <text x="125" y="100" class="sub-text">POST /orders &amp; Validation</text>
+    <text x="125" y="125" class="sub-text">Owned DB: order_db</text>
+  </g>
+
+  <!-- Proxy Routing Arrows from Gateway to Services -->
+  <path d="M 280 335 L 235 420" class="arrow-proxy" />
+  <path d="M 550 335 L 550 420" class="arrow-proxy" />
+  <path d="M 820 335 L 865 420" class="arrow-proxy" />
+
+  <!-- Inter-service call arrows (Order -> User and Order -> Product) -->
+  <path d="M 740 480 L 675 480" class="arrow-order" />
+  <path d="M 780 420 C 780 380, 310 380, 310 420" class="arrow-order" />
+  <text x="545" y="375" text-anchor="middle" class="call-text" fill="#be185d">Internal REST: Order → User/Product</text>
+
+  <!-- LAYER 4: DATABASE TIER -->
+  <g transform="translate(150, 740)">
+    <rect width="800" height="75" class="box-db" />
+    <text x="400" y="30" class="header-text">Layer 4: Persistence Layer (MongoDB Atlas / Docker Mongo Container)</text>
+    <text x="400" y="52" class="sub-text">Database-per-Service: user_db | product_db | order_db (Persistent Volumes / Cloud Atlas Replica Set)</text>
+  </g>
+
+  <!-- DB connection arrows -->
+  <path d="M 235 570 L 235 740" class="arrow-db" />
+  <path d="M 550 570 L 550 740" class="arrow-db" />
+  <path d="M 865 570 L 865 740" class="arrow-db" />
+</svg>
