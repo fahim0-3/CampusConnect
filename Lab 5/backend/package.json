@@ -1,0 +1,27 @@
+{
+  "name": "student-api-express",
+  "version": "2.0.0",
+  "description": "Lab 4 - Student Management REST API backed by MongoDB Atlas (migrated from the Lab 3 in-memory implementation)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "check": "node scripts/check-connection.js",
+    "seed": "node scripts/seed.js"
+  },
+  "keywords": [
+    "rest",
+    "express",
+    "mongodb",
+    "mongoose",
+    "soa"
+  ],
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mongoose": "^8.9.5",
+    "swagger-ui-express": "^5.0.1",
+    "yamljs": "^0.3.0"
+  }
+}

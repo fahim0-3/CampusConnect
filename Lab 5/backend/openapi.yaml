@@ -1,0 +1,448 @@
+openapi: 3.0.3
+info:
+  title: Student Management REST API
+  description: |
+    RESTful Web Service for Student resource CRUD operations.
+    Developed for Web Services & SOA Laboratory.
+
+    **Lab 4 change:** the storage layer moved from an in-memory array to a
+    persistent MongoDB Atlas database via Mongoose. The resource design,
+    request/response shapes and HTTP status codes are unchanged from Lab 3.
+
+    The only addition to the contract is `409 Conflict`, returned when a write
+    violates the unique index on `email`.
+  version: 2.0.0
+  contact:
+    name: SOA Lab - Lab 4
+servers:
+  - url: http://localhost:5000
+    description: Express.js local server (React client origin)
+  - url: http://10.0.2.2:5000
+    description: Same server as seen from the Android emulator
+
+tags:
+  - name: Students
+    description: CRUD operations on the Student resource
+  - name: Service
+    description: Service metadata and health
+
+paths:
+  /health:
+    get:
+      tags:
+        - Service
+      summary: Database connectivity health check
+      responses:
+        '200':
+          description: API up and connected to MongoDB Atlas
+        '503':
+          description: API up but the database connection is not ready
+
+  /students:
+    get:
+      tags:
+        - Students
+      summary: List all students
+      description: Returns every student document in the MongoDB collection. Supports optional query filters.
+      parameters:
+        - name: course
+          in: query
+          description: Filter students by course name (case-insensitive exact match)
+          required: false
+          schema:
+            type: string
+            example: Computer Science
+        - name: semester
+          in: query
+          description: Filter students by semester number
+          required: false
+          schema:
+            type: integer
+            example: 5
+      responses:
+        '200':
+          description: Successfully retrieved list of students
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  count:
+                    type: integer
+                    example: 3
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Student'
+              example:
+                success: true
+                count: 3
+                data:
+                  - id: 1
+                    name: Aarav Patel
+                    email: aarav@example.com
+                    course: Computer Science
+                    semester: 5
+                  - id: 2
+                    name: Priya Sharma
+                    email: priya@example.com
+                    course: Information Technology
+                    semester: 4
+                  - id: 3
+                    name: Rohan Gupta
+                    email: rohan.gupta@example.com
+                    course: Data Science
+                    semester: 6
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      tags:
+        - Students
+      summary: Create a new student
+      description: Validates the payload and inserts a new Student document into MongoDB Atlas.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentInput'
+            example:
+              name: Meera Iyer
+              email: meera.iyer@example.com
+              course: Cyber Security
+              semester: 3
+      responses:
+        '201':
+          description: Student created successfully
+          headers:
+            Location:
+              description: URI of the newly created student resource
+              schema:
+                type: string
+                example: /students/4
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Student created successfully
+                  data:
+                    $ref: '#/components/schemas/Student'
+        '400':
+          description: Bad Request - validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: 400
+                error: Bad Request
+                message: Validation failed
+                errors:
+                  - field: name
+                    message: Name is required and cannot be empty
+                  - field: email
+                    message: A valid email address is required (e.g. user@example.com)
+                timestamp: "2026-08-25T14:30:00.000Z"
+        '409':
+          description: Conflict - the email already exists (unique index violation)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: 409
+                error: Conflict
+                message: Duplicate value rejected by a database constraint
+                errors:
+                  - field: email
+                    message: A student with this email already exists
+                timestamp: "2026-08-25T14:30:00.000Z"
+
+  /students/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: Integer student id (Lab 3 contract) or a 24-character MongoDB ObjectId
+        schema:
+          type: string
+          example: "1"
+
+    get:
+      tags:
+        - Students
+      summary: Get student by ID
+      responses:
+        '200':
+          description: Student record found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/Student'
+        '400':
+          description: Malformed identifier
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Student not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: 404
+                error: Not Found
+                message: Student with ID 999 not found
+                timestamp: "2026-08-25T14:30:00.000Z"
+
+    put:
+      tags:
+        - Students
+      summary: Full update of an existing student
+      description: Replaces every attribute of the matching document. All fields are required.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentInput'
+            example:
+              name: Aarav V. Patel
+              email: aarav.patel@example.com
+              course: Artificial Intelligence
+              semester: 6
+      responses:
+        '200':
+          description: Student updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/Student'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Student not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Email already used by another student
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    patch:
+      tags:
+        - Students
+      summary: Partial update of a student
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentPatchInput'
+            example:
+              semester: 6
+      responses:
+        '200':
+          description: Student partially updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/Student'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Student not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Email already used by another student
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Students
+      summary: Delete a student by ID
+      responses:
+        '200':
+          description: Student successfully deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    example: Student with ID 1 deleted successfully
+                  data:
+                    $ref: '#/components/schemas/Student'
+        '400':
+          description: Malformed identifier
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Student not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    Student:
+      type: object
+      required:
+        - id
+        - name
+        - email
+        - course
+        - semester
+      properties:
+        id:
+          type: integer
+          description: Stable integer identifier, generated by an atomic counter collection
+          example: 1
+        name:
+          type: string
+          example: Aarav Patel
+        email:
+          type: string
+          format: email
+          description: Unique across the collection (enforced by a MongoDB unique index)
+          example: aarav@example.com
+        course:
+          type: string
+          example: Computer Science
+        semester:
+          type: integer
+          minimum: 1
+          maximum: 8
+          example: 5
+
+    StudentInput:
+      type: object
+      required:
+        - name
+        - email
+        - course
+        - semester
+      properties:
+        name:
+          type: string
+          minLength: 1
+          example: Meera Iyer
+        email:
+          type: string
+          format: email
+          example: meera.iyer@example.com
+        course:
+          type: string
+          minLength: 1
+          example: Cyber Security
+        semester:
+          type: integer
+          minimum: 1
+          maximum: 8
+          example: 3
+
+    StudentPatchInput:
+      type: object
+      minProperties: 1
+      properties:
+        name:
+          type: string
+          minLength: 1
+        email:
+          type: string
+          format: email
+        course:
+          type: string
+          minLength: 1
+        semester:
+          type: integer
+          minimum: 1
+          maximum: 8
+
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 400
+        error:
+          type: string
+          example: Bad Request
+        message:
+          type: string
+          example: Validation failed
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: email
+              message:
+                type: string
+                example: A valid email address is required
+        timestamp:
+          type: string
+          format: date-time
+          example: "2026-08-25T14:30:00.000Z"

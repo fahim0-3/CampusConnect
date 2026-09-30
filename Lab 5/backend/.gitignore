@@ -1,0 +1,11 @@
+# Secrets - the Atlas connection string must never be committed
+.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
+
+# Logs
+npm-debug.log*
+*.log

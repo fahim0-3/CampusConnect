@@ -1,0 +1,406 @@
+:root {
+  --navy: #1f3864;
+  --navy-dark: #16294a;
+  --accent: #2563eb;
+  --danger: #b91c1c;
+  --danger-soft: #fef2f2;
+  --success: #166534;
+  --success-soft: #f0fdf4;
+  --ink: #1f2933;
+  --muted: #5b6673;
+  --line: #dde3ec;
+  --surface: #ffffff;
+  --page: #f4f6fa;
+  --radius: 10px;
+  --shadow: 0 1px 2px rgba(16, 24, 40, 0.06), 0 8px 24px rgba(16, 24, 40, 0.06);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+code {
+  font-family: "Cascadia Mono", Consolas, "SF Mono", monospace;
+  font-size: 0.86em;
+  background: rgba(31, 56, 100, 0.07);
+  padding: 0.1em 0.4em;
+  border-radius: 4px;
+}
+
+.app {
+  /* Wide enough that the Actions column, and therefore the Delete button,
+     is visible without horizontal scrolling on a normal laptop screen. */
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 32px 24px 56px;
+}
+
+/* ---------------------------------------------------------------- header */
+
+.app__header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding-bottom: 18px;
+  border-bottom: 2px solid var(--navy);
+  margin-bottom: 22px;
+}
+
+.app__header h1 {
+  margin: 0;
+  font-size: 1.7rem;
+  color: var(--navy);
+  letter-spacing: -0.01em;
+}
+
+.app__subtitle {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.app__base-url {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.app__base-url code {
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+/* ---------------------------------------------------------------- layout */
+
+.app__grid {
+  display: grid;
+  grid-template-columns: minmax(300px, 380px) 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.app__column {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+@media (max-width: 900px) {
+  .app__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------------------------------------------------------------- panels */
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px;
+}
+
+.panel h2 {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--navy);
+}
+
+.panel__header {
+  margin-bottom: 16px;
+}
+
+.panel__hint {
+  margin: 4px 0 0;
+  font-size: 0.83rem;
+  color: var(--muted);
+}
+
+/* ----------------------------------------------------------------- forms */
+
+.form__row {
+  margin-bottom: 14px;
+}
+
+.form__row label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.83rem;
+  margin-bottom: 5px;
+  color: var(--navy-dark);
+}
+
+.form__row input,
+.lookup input {
+  width: 100%;
+  padding: 9px 11px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  font: inherit;
+  background: #fdfdff;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.form__row input:focus,
+.lookup input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.form__row input[aria-invalid="true"] {
+  border-color: var(--danger);
+  background: var(--danger-soft);
+}
+
+.field-error {
+  margin: 5px 0 0;
+  color: var(--danger);
+  font-size: 0.8rem;
+}
+
+.form__actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+/* --------------------------------------------------------------- buttons */
+
+.btn {
+  border: 1px solid transparent;
+  border-radius: 7px;
+  padding: 9px 16px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn--primary {
+  background: var(--navy);
+  color: #fff;
+}
+
+.btn--primary:hover:not(:disabled) {
+  background: var(--navy-dark);
+}
+
+.btn--ghost {
+  background: transparent;
+  border-color: var(--line);
+  color: var(--navy);
+}
+
+.btn--ghost:hover:not(:disabled) {
+  border-color: var(--navy);
+}
+
+.btn--small {
+  padding: 5px 11px;
+  font-size: 0.8rem;
+  background: transparent;
+  border-color: var(--line);
+  color: var(--navy);
+}
+
+.btn--small:hover:not(:disabled) {
+  border-color: var(--navy);
+}
+
+.btn--danger {
+  color: var(--danger);
+}
+
+.btn--danger:hover:not(:disabled) {
+  border-color: var(--danger);
+  background: var(--danger-soft);
+}
+
+/* ---------------------------------------------------------------- tables */
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.table th,
+.table td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+
+/* Only the action buttons must never wrap; text cells may break if the
+   window is narrow, which keeps the buttons on screen. */
+.table th,
+.table__actions {
+  white-space: nowrap;
+}
+
+.table thead th {
+  background: #f7f9fc;
+  color: var(--navy);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid var(--line);
+}
+
+.table tbody tr:hover {
+  background: #f9fbff;
+}
+
+.table__actions {
+  display: flex;
+  gap: 7px;
+}
+
+.table__actions-head {
+  text-align: right;
+}
+
+/* ---------------------------------------------------------------- states */
+
+.state {
+  margin: 12px 0 0;
+  padding: 12px 14px;
+  border-radius: 7px;
+  font-size: 0.88rem;
+}
+
+.state--loading {
+  background: #f1f5f9;
+  color: var(--muted);
+}
+
+.state--empty {
+  background: #f8fafc;
+  color: var(--muted);
+}
+
+.state--error {
+  background: var(--danger-soft);
+  color: var(--danger);
+  border: 1px solid #fecaca;
+}
+
+.state--ok {
+  background: var(--success-soft);
+  color: var(--success);
+  border: 1px solid #bbf7d0;
+}
+
+.banner {
+  position: relative;
+  margin: 0 0 20px;
+  padding: 12px 40px 12px 16px;
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.banner--success {
+  background: var(--success-soft);
+  color: var(--success);
+  border: 1px solid #bbf7d0;
+}
+
+.banner--error {
+  background: var(--danger-soft);
+  color: var(--danger);
+  border: 1px solid #fecaca;
+}
+
+.banner__close {
+  position: absolute;
+  top: 6px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.65;
+}
+
+.banner__close:hover {
+  opacity: 1;
+}
+
+/* ---------------------------------------------------------------- lookup */
+
+.lookup {
+  display: flex;
+  gap: 9px;
+}
+
+.lookup input {
+  flex: 1;
+}
+
+.lookup__result {
+  margin: 14px 0 0;
+  display: grid;
+  gap: 8px;
+}
+
+.lookup__result > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px dashed var(--line);
+  padding-bottom: 6px;
+}
+
+.lookup__result dt {
+  font-weight: 600;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.lookup__result dd {
+  margin: 0;
+  text-align: right;
+}
+
+/* ---------------------------------------------------------------- footer */
+
+.app__footer {
+  margin-top: 30px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.app__footer p {
+  margin: 0;
+}

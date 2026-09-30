@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.vite/
+
+# Local overrides only. `.env` itself IS committed: it holds the public
+# API_BASE_URL, never a credential.
+.env.local
+.env.*.local

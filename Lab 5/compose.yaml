@@ -1,0 +1,30 @@
+﻿services:
+  api:
+    build: ./backend
+    container_name: student-api
+    ports:
+      - "5000:5000"
+    environment:
+      PORT: 5000
+      MONGO_URI: mongodb://mongodb:27017/campusconnect
+      MONGODB_DB_NAME: campusconnect
+    depends_on:
+      - mongodb
+    networks:
+      - student-network
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    volumes:
+      - student-mongo-data:/data/db
+    networks:
+      - student-network
+
+networks:
+  student-network:
+    external: true
+
+volumes:
+  student-mongo-data:
+    external: true

@@ -1,0 +1,420 @@
+{
+  "info": {
+    "_postman_id": "lab6-microservices-campusconnect",
+    "name": "Microservices – Lab 6",
+    "description": "Comprehensive Postman test collection for Web Services & SOA Lab 6: Docker & Microservices decomposing User, Product, and Order services with inter-service communication and graceful 503 error handling.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. User Service - Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3001/health",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3001",
+          "path": ["health"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Service is user-service\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.service).to.eql(\"user-service\");",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. User Service - GET All Users (Expected 200)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3001/users",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3001",
+          "path": ["users"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Response is an array\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(Array.isArray(jsonData)).to.be.true;",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. User Service - GET User by ID 101",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3001/users/101",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3001",
+          "path": ["users", "101"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"User ID is 101\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.id).to.eql(101);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Product Service - Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3002/health",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3002",
+          "path": ["health"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Service is product-service\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.service).to.eql(\"product-service\");",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Product Service - GET All Products (Expected 200)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3002/products",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3002",
+          "path": ["products"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Products array returned\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(Array.isArray(jsonData)).to.be.true;",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Product Service - GET Product by ID 501",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3002/products/501",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3002",
+          "path": ["products", "501"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Product ID is 501\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.id).to.eql(501);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Order Service - Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3003/health",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3003",
+          "path": ["health"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "8. Order Service - POST Create Order (Order -> User and Product) (Expected 201)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"userId\": 101,\n  \"productId\": 501,\n  \"quantity\": 2\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3003/orders",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3003",
+          "path": ["orders"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 201 Created\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "pm.test(\"Total amount correctly calculated\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.userId).to.eql(101);",
+              "    pm.expect(jsonData.productId).to.eql(501);",
+              "    pm.expect(jsonData.quantity).to.eql(2);",
+              "    pm.expect(jsonData.totalAmount).to.eql(99.98);",
+              "    pm.expect(jsonData.status).to.eql(\"CONFIRMED\");",
+              "});",
+              "pm.test(\"Embedded snapshots present\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.userSnapshot.name).to.eql(\"Alice Johnson\");",
+              "    pm.expect(jsonData.productSnapshot.name).to.eql(\"Cloud Computing & SOA Textbook\");",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "9. Order Service - GET All Orders",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3003/orders",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3003",
+          "path": ["orders"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Contains at least one order\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.length).to.be.above(0);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "10. Order Service - Invalid User ID (Expected 404)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"userId\": 9999,\n  \"productId\": 501,\n  \"quantity\": 1\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3003/orders",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3003",
+          "path": ["orders"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 404 Not Found\", function () {",
+              "    pm.response.to.have.status(404);",
+              "});",
+              "pm.test(\"Error envelope contains target service info\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.error).to.eql(\"Not Found\");",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "11. Order Service - Dependency Down (Stop User Service) (Expected 503)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"userId\": 101,\n  \"productId\": 501,\n  \"quantity\": 1\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3003/orders",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3003",
+          "path": ["orders"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 503 Service Unavailable\", function () {",
+              "    pm.response.to.have.status(503);",
+              "});",
+              "pm.test(\"Identifies User Service as unavailable\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql(503);",
+              "    pm.expect(jsonData.targetService).to.eql(\"User Service\");",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "12. Order Service - Recovery After Restart (Expected 201)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"userId\": 101,\n  \"productId\": 501,\n  \"quantity\": 1\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3003/orders",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3003",
+          "path": ["orders"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 201 Created after recovery\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
